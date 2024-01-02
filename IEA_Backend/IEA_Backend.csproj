@@ -21,5 +21,13 @@
   <ItemGroup>
     <Folder Include="Services\" />
     <Folder Include="Services\BookService\" />
+    <Folder Include="wwwroot\" />
+    <Folder Include="wwwroot\Books\" />
+    <Folder Include="wwwroot\UTF8Books\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="wwwroot\" />
+    <Content Remove="wwwroot\Books\" />
+    <Content Remove="wwwroot\UTF8Books\" />
   </ItemGroup>
 </Project>
