@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using IEA_Backend.Services.BookService;
 using System.Text.RegularExpressions;
 using System.Text;
+using IEA_Backend.Models;
 
 namespace IEA_Backend.Services.BookService
 {
@@ -77,12 +78,19 @@ namespace IEA_Backend.Services.BookService
 
 
         // Get Book titles
-        public async Task<List<string>> GetAllBookTitles()
+        public async Task<List<BookInfo>> GetAllBookTitles()
         {
 
             List<Book> books = await GetAllBooks();
-            List<string> bookTitles = books.Select(book => book.Title).ToList();
-            return await Task.FromResult(bookTitles);
+
+            List<BookInfo> bookInfoList = books.Select(book => new BookInfo
+            {
+                Id = book.Id,
+                Title = book.Title
+            }).ToList();
+
+
+            return bookInfoList;
 
         }
 
@@ -115,7 +123,7 @@ namespace IEA_Backend.Services.BookService
             var top10WordGroups = sortedWordGroups.Take(10);
 
             // Extract words from groups
-            var top10Words = top10WordGroups.Select(group => group.Key).ToList();
+            var top10Words = top10WordGroups.Select(group => Char.ToUpper(group.Key[0]) + group.Key.Substring(1)).ToList();
 
             return top10Words;
         }
@@ -129,7 +137,7 @@ namespace IEA_Backend.Services.BookService
                         .ToArray();
         }
 
-        // Get list of Words for the specific boon and keyword
+        // Get list of Words for the specific book and keyword
         public async Task<List<string>> SearchWordsInBook(int id, string searchString)
         {
             List<Book> books = await GetAllBooks();
@@ -143,11 +151,20 @@ namespace IEA_Backend.Services.BookService
             string[] words = TokenizeContent(book.Content);
 
             // Perform case-insensitive search for words starting with the specified string
-            var matchedWords = words
-                .Where(word => word.StartsWith(searchString, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            var matchedWords = words.Where(word => word.StartsWith(searchString, StringComparison.OrdinalIgnoreCase));
 
-            return matchedWords;
+            var matchedWordGroups = matchedWords.GroupBy(word => word.ToLower());
+
+            // Order groups by count in descending order
+            var sortedWordGroups = matchedWordGroups.OrderByDescending(group => group.Count());
+
+            // Take top 10 groups
+            var top10WordGroups = sortedWordGroups.Take(10);
+
+            // Extract words from groups
+            var matchedTop10Words = top10WordGroups.Select(group => Char.ToUpper(group.Key[0]) + group.Key.Substring(1)).ToList();
+
+            return matchedTop10Words;
         }
 
     }

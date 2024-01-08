@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IEA_Backend.models;
+using IEA_Backend.Models;
 using IEA_Backend.Services.BookService;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
@@ -14,11 +15,11 @@ namespace IEA_Backend.Controllers
     [EnableCors("AllowSpecificOrigin")]
     [Route("api/[controller]")]
     [ApiController]
-    public class BookController : ControllerBase
+    public class booksController : ControllerBase
     {
         private readonly IBookService _bookService;
 
-        public BookController(IBookService BookService)
+        public booksController(IBookService BookService)
         {
             _bookService = BookService;
         }
@@ -33,7 +34,7 @@ namespace IEA_Backend.Controllers
         }
 
         [HttpGet]
-        public async  Task<ActionResult<List<string>>> GetAllBookTitles()
+        public async  Task<ActionResult<List<BookInfo>>> GetAllBookTitles()
 
         {
             var bookTitles =  await _bookService.GetAllBookTitles();
